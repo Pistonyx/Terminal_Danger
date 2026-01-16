@@ -1,5 +1,5 @@
-[n] Next Playuh.Room     - Move deeper into the building.
-[p] Previous Playuh.Room - Move back toward the alley.
+[n] Next          - Move deeper into the building.
+[p] Previous      - Move back toward the alley.
 [s] Search        - Look for items in the room.
 [i] Interact      - Talk to NPCs or use objects.
 [d] Drop          - Remove an item from your bag.

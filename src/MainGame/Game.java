@@ -3,6 +3,8 @@ package MainGame;
 import Commands.*;
 import Playuh.*;
 import Playuh.Character;
+
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +49,8 @@ public class Game {
                 break;
             }
             Room current = gameRooms.get(timofey.currentRoomIndex);
-            System.out.println("\n--- " + current.name + " ---");
+            System.out.println("");
+            System.out.println("--- " + current.name + " ---");
             checkNPCPresence(current);
             System.out.println("Inv: " + timofey.inventory);
             System.out.print("Action > ");
@@ -55,8 +58,14 @@ public class Game {
             if (action.equals("q")) {
                 running = false;
             } else if (commandMap.containsKey(action)) {
+                for (int i = 0; i < 25; i++) {
+                    System.out.println("");
+                }
                 commandMap.get(action).execute(timofey, gameRooms, gameItems);
             } else {
+                for (int i = 0; i < 25; i++) {
+                    System.out.println("");
+                }
                 System.out.println("Unknown command. Type 'h' for help.");
             }
         }

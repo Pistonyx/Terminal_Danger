@@ -18,7 +18,7 @@ public class InteractCommand implements GameCommand {
 
         // Water Bottle Puzzle
         if ((r.name.contains("101") || r.name.contains("102")) && p.hasItem("Empty Bottle")) {
-            System.out.print("\nYo you lowkey have a water bottle. Do you want to use the sink to fill your bottle with water? (y/n): ");
+            System.out.print("\nYo you lowkey have an empty water bottle. Do you want to use the sink to fill your bottle with water? (y/n): ");
             if (sc.nextLine().equalsIgnoreCase("y")) {
                 p.replaceItem("Empty Bottle", "Full Water Bottle");
                 System.out.println("You now have a Full Water Bottle.");
