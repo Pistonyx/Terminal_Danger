@@ -111,6 +111,36 @@
       "name": "Apartment 101",
       "description": "A simple, small apartment.",
       "neighbours": ["loc_hallway","loc_apartment102"]
+    },
+    {
+      "id": "loc_apartment102",
+      "name": "Apartment 102",
+      "description": "Another simple small room.",
+      "neighbours": ["loc_apartment101","loc_garage"]
+    },
+    {
+      "id": "loc_garage",
+      "name": "The garage",
+      "description": "A garage...this place might be useful.",
+      "neighbours": ["loc_apartment102","loc_storage"]
+    },
+    {
+      "id": "loc_storage",
+      "name": "Storage room",
+      "description": "I can store things here.",
+      "neighbours": ["loc_garage","loc_balcony"]
+    },
+    {
+      "id": "loc_balcony",
+      "name": "The balcony",
+      "description": "Theres nothing here except for fresh air and some scribbles on a note.",
+      "neighbours": ["loc_storage","loc_cellar"]
+    },
+    {
+      "id": "loc_cellar",
+      "name": "The cold cellar",
+      "description": "The final room.",
+      "neighbours": ["loc_balcony"]
     }
   ]
 
