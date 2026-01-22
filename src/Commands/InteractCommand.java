@@ -8,6 +8,7 @@ import Playuh.*;
 public class InteractCommand implements GameCommand {
     public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room r = rooms.get(p.currentRoomIndex);
+        //checks if theres anyone or anything to interact with in the room
         if (r.npc == null) {
             System.out.println("No one here to talk to.");
             return;
@@ -17,19 +18,19 @@ public class InteractCommand implements GameCommand {
         Scanner sc = new Scanner(System.in);
 
         // Water Bottle Puzzle
-        if ((r.name.contains("101") || r.name.contains("102")) && p.hasItem("Empty Bottle")) {
+        if ((r.name.contains("101") || r.name.contains("102")) && p.hasItem("Empty water bottle")) {
             System.out.print("\nYo you lowkey have an empty water bottle. Do you want to use the sink to fill your bottle with water? (y/n): ");
             if (sc.nextLine().equalsIgnoreCase("y")) {
-                p.replaceItem("Empty Bottle", "Full Water Bottle");
-                System.out.println("You now have a Full Water Bottle.");
+                p.replaceItem("Empty water bottle", "Full water bottle");
+                System.out.println("You now have a Full water bottle.");
             }
         }
         // Cellar Unlocking using Leon
-        else if (r.npc.name.equals("Leon Marcin Klamer") && p.hasItem("Full Water Bottle")) {
+        else if (r.npc.name != null && r.npc.name.contains("Leon") && p.hasItem("Full water bottle")) {
             System.out.println("'Leon: Wait a second...is that..Dziekuje! Exactly what I needed.'");
             System.out.println(">> Leon stands up and KICKS the cellar door open for you!");
             Game.isCellarLocked = false;
-            p.replaceItem("Full Water Bottle", "Empty Bottle");
+            p.replaceItem("Full water bottle", "Empty water bottle");
         }
     }
 }

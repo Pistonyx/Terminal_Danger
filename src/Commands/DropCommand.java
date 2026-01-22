@@ -6,23 +6,34 @@ import Playuh.Room;
 import Playuh.Item;
 
 public class DropCommand implements GameCommand{
-    /**
-     * Drops item from inventory based on user input
-     */
+
+      // Drops an item from inventory based on user input
+
     public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+        Room current = rooms.get(p.currentRoomIndex);
+
+        // Only allows dropping items while in the Storage room
+        if (current.getId() == null || !current.getId().equals("loc_storage")) {
+            System.out.println("You can only drop items in the Storage room.");
+            return;
+        }
+
         if (p.inventory.isEmpty()) {
             System.out.println("Nothing to drop.");
             return;
         }
+
         System.out.println("Inventory: " + p.inventory);
-        System.out.print("Enter index to drop (1-" + (p.inventory.size()) + "): ");
-        // Prompts for item index; drops item or reports error
+        System.out.print("Enter index to store (1-" + (p.inventory.size()) + "): ");
+
         try {
             Scanner sc = new Scanner(System.in);
             int idx = Integer.parseInt(sc.nextLine());
-            // Drops item at index or reports invalid choice
+
             if (idx > 0 && idx <= p.inventory.size()) {
-                System.out.println("Dropped: " + p.inventory.remove(idx-1));
+                String stored = p.inventory.remove(idx - 1);
+                current.storedItems.add(stored);
+                System.out.println("Stored in Storage room: " + stored);
             } else {
                 System.out.println("Invalid choice.");
             }

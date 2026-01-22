@@ -7,6 +7,7 @@ import Playuh.*;
 
 public class MovePrevCommand implements GameCommand{
     public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+        // Moves player back a room unless they're at the start
         if (p.currentRoomIndex > 0) {
             p.currentRoomIndex--;
             Game.checkNPCPresence(rooms.get(p.currentRoomIndex));
