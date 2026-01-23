@@ -28,7 +28,7 @@
       "id": "item_weighted_cube",
       "name": "Weighted cube",
       "type": "QUEST",
-      "description": "This cube is kinda heavy"
+      "description": "This cube is kinda heavy."
     },
     {
       "id": "item_broken_lever_handle",
@@ -101,7 +101,7 @@
     {
       "id": "loc_darkAlleyway",
       "name": "Dark alleyway",
-      "description": "A foggy alleyway on the outskirts of a city",
+      "description": "A foggy alleyway on the outskirts of a city.",
       "neighbours": ["loc_hallway"]
     },
     {
