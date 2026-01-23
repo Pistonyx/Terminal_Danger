@@ -71,6 +71,7 @@ public class Game {
             Room current = gameRooms.get(timofey.currentRoomIndex);
             System.out.println("");
             System.out.println("--- " + current.name + " ---");
+            System.out.println("Type 'h' for help.");
             checkNPCPresence(current);
             System.out.println("Inventory: " + timofey.inventory);
             System.out.print("Action > ");

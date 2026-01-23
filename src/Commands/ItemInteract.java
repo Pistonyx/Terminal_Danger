@@ -29,4 +29,5 @@ public class ItemInteract implements GameCommand{
             System.out.println("Invalid choice.");
         }
     }
+    //TODO
 }
