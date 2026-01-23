@@ -21,7 +21,6 @@ public class Game {
      */
     public static void main(String[] args) {
         GameData data = GameData.loadGamaDataFromResources("/gamedata.json");
-
         ArrayList<Room> gameRooms = data.locations;
         // Loads the rooms from gamedata json
         if (gameRooms == null || gameRooms.isEmpty()) {
@@ -56,6 +55,8 @@ public class Game {
         commandMap.put("s", new SearchCommand());
         commandMap.put("i", new InteractCommand());
         commandMap.put("d", new DropCommand());
+        commandMap.put("items", new ItemInteract());
+        commandMap.put("quest", new QuestCommand());
 
         System.out.println("=== MISSION: THE CELLAR ASSASSINATION ===");
 
@@ -71,10 +72,10 @@ public class Game {
             System.out.println("");
             System.out.println("--- " + current.name + " ---");
             checkNPCPresence(current);
-            System.out.println("Inv: " + timofey.inventory);
+            System.out.println("Inventory: " + timofey.inventory);
             System.out.print("Action > ");
             String action = sc.nextLine().toLowerCase();
-            if (action.equals("q")) {
+            if (action.equals("quit")) {
                 running = false;
             } else if (commandMap.containsKey(action)) {
                 for (int i = 0; i < 25; i++) {
