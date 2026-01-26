@@ -95,6 +95,14 @@
       "role": "NPC",
       "homeLocationId": "loc_cellar",
       "dialogue": "A criminal that deserves to be put down."
+    },
+    {
+      "id": "???",
+      "name": "???",
+      "role": "NPC",
+      "homeLocationId": "loc_garage",
+      "bio": "Hello.",
+      "dialogue": "Would you like to play my game?"
     }
   ],
   "locations": [

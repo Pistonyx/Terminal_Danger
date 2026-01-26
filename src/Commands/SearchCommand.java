@@ -60,6 +60,8 @@ public class SearchCommand implements GameCommand{
                 } else {
                     System.out.println(">> Your inventory is full!");
                 }
+            } else {
+                System.out.println("You decide not to pick it up.");
             }
         } else {
             System.out.println("\nYou search the room, but find nothing.");

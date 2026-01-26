@@ -74,7 +74,7 @@ public class Game {
             System.out.println("Type 'h' for help.");
             checkNPCPresence(current);
             System.out.println("Inventory: " + timofey.inventory);
-            System.out.print("Action > ");
+            System.out.print("Action -> ");
             String action = sc.nextLine().toLowerCase();
             if (action.equals("quit")) {
                 running = false;

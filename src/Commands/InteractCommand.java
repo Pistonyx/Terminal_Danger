@@ -9,8 +9,8 @@ public class InteractCommand implements GameCommand {
     public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room current = rooms.get(p.currentRoomIndex);
         //checks if theres anyone or anything to interact with in the room
-        if (current.npc == null) {
-            System.out.println("No one here to talk to.");
+        if (current.npc == null && current.hasItem == false) {
+            System.out.println("Nothing to do here.");
             return;
         }
 
@@ -23,6 +23,10 @@ public class InteractCommand implements GameCommand {
             if (sc.nextLine().equalsIgnoreCase("y")) {
                 p.replaceItem("Empty water bottle", "Full water bottle");
                 System.out.println("You now have a Full water bottle.");
+                return;
+            } else {
+                System.out.println("You didn't fill up your bottle");
+                return;
             }
         }
         // Cellar Unlocking using Leon
@@ -31,6 +35,17 @@ public class InteractCommand implements GameCommand {
             System.out.println(">> Leon stands up and KICKS the cellar door open for you!");
             Game.isCellarLocked = false;
             p.replaceItem("Full water bottle", "Empty water bottle");
+        } else if (current.name.contains("The garage") && p.hasItem("Broken lever handle")) {
+            System.out.println("You can fix your broken lever handle here. Would you like to fix it? (y/n)");
+            if (sc.nextLine().equalsIgnoreCase("y")){
+                //TODO
+                p.replaceItem("Broken lever handle","Lever handle");
+                System.out.println("You now have a fixed lever handle");
+                return;
+            }else {
+                System.out.println("You decided to not fix the lever.");
+                return;
+            }
         }
     }
 }
