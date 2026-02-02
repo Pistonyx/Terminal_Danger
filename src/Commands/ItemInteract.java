@@ -1,5 +1,6 @@
 package Commands;
 
+import Playuh.GameData;
 import Playuh.Item;
 import Playuh.Player;
 import Playuh.Room;
@@ -14,23 +15,44 @@ public class ItemInteract implements GameCommand{
             System.out.println("You have no items to interact with.");
             return;
         }
-        System.out.println("Inventory: "+p.inventory);
-        System.out.println("Enter index to interact with an item. (1-"+p.inventory.size()+"):");
+
+        System.out.println("Inventory: " + p.inventory);
+        System.out.println("Enter index to interact with an item. (1-" + p.inventory.size() + "):");
+
         try {
             Scanner sc = new Scanner(System.in);
             int idx = Integer.parseInt(sc.nextLine());
-            System.out.println(idx);
-            if (idx > 0 && idx <= 3) {
-                String item = p.inventory.get(idx-1);
-                Item buh = new Item(item);
-                buh.showDescription();
-                // make the description get loaded from gamedata.json
-                //TODO
+
+            if (idx >= 1 && idx <= p.inventory.size()) {
+                String itemName = p.inventory.get(idx - 1);
+
+                // Use GameData to load items/descriptions from gamedata.json
+                GameData data = GameData.loadGamaDataFromResources("/gamedata.json");
+                Item fromJson = findItemByName(data, itemName);
+
+                Item selected = new Item(itemName);
+                if (fromJson != null && fromJson.description != null && !fromJson.description.isBlank()) {
+                    selected.description = fromJson.description;
+                }
+
+                selected.showDescription();
             } else {
                 System.out.println("Index out of bounds of inventory.");
             }
         } catch (Exception e) {
             System.out.println("Invalid choice.");
         }
+    }
+
+    private Item findItemByName(GameData data, String itemName) {
+        if (data == null || data.items == null) return null;
+
+        for (Item it : data.items) {
+            if (it == null || it.name == null) continue;
+            if (it.name.equalsIgnoreCase(itemName)) {
+                return it;
+            }
+        }
+        return null;
     }
 }
