@@ -34,7 +34,7 @@
       "id": "item_broken_lever_handle",
       "name": "Broken lever handle",
       "type": "QUEST",
-      "description": "I can't use this for anything. I should try to fix it."
+      "description": "I can't use this for anything. I should try to fix it in the garage."
     },
     {
       "id": "item_lever_handle",
@@ -95,15 +95,8 @@
       "role": "NPC",
       "homeLocationId": "loc_cellar",
       "dialogue": "A criminal that deserves to be put down."
-    },
-    {
-      "id": "???",
-      "name": "???",
-      "role": "NPC",
-      "homeLocationId": "loc_garage",
-      "bio": "Hello.",
-      "dialogue": "Would you like to play my game?"
     }
+
   ],
   "locations": [
     {

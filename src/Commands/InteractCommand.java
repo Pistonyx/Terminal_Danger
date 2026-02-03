@@ -1,21 +1,46 @@
 package Commands;
+import Commands.GameCommand;
+import MainGame.Game;
+import Playuh.Item;
+import Playuh.Player;
+import Playuh.Room;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
-import MainGame.Game;
-import Playuh.*;
 public class InteractCommand implements GameCommand {
+
+    private int letters = 5;
+    private long leverTime = 3000;
+
     public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room current = rooms.get(p.currentRoomIndex);
-        //checks if theres anyone or anything to interact with in the room
-        if (current.npc == null && current.hasItem == false) {
-            System.out.println("Nothing to do here.");
+        Scanner sc = new Scanner(System.in);
+
+        // Lever puzzle
+        // uses the runLeverMinigame and then checks if it returned true or false. Based on that it outputs 2 texts.
+        if (current.name != null && current.name.contains("The garage") && p.hasItem("Broken lever handle")) {
+            System.out.print("You can fix your broken lever handle here. You will have 3 seconds to write 5 randomly generated letters. Start fixing it? (y/n): ");
+            if (!sc.nextLine().equalsIgnoreCase("y")) {
+                return;
+            }
+
+            boolean won = runLeverMinigame(sc);
+            if (won) {
+                p.replaceItem("Broken lever handle", "Lever handle");
+                System.out.println("Success! You fixed the lever handle.");
+            } else {
+                System.out.println("You failed to fix it in time. The lever handle is still broken.");
+            }
             return;
         }
 
-        current.npc.showBio();
-        Scanner sc = new Scanner(System.in);
+        // If there's no NPC, interacting does nothing
+        if (current.npc == null) {
+            System.out.println("Nothing to do here.");
+            return;
+        }
 
         // Water Bottle Puzzle
         if ((current.name.contains("101") || current.name.contains("102")) && p.hasItem("Empty water bottle")) {
@@ -30,22 +55,46 @@ public class InteractCommand implements GameCommand {
             }
         }
         // Cellar Unlocking using Leon
-        else if (current.npc.name != null && current.npc.name.contains("Leon") && p.hasItem("Full water bottle")) {
+        else if (current.npc != null && current.npc.name != null && current.npc.name.contains("Leon") && p.hasItem("Full water bottle")) {
             System.out.println("'Leon: Wait a second...is that..Dziekuje! Exactly what I needed.'");
             System.out.println(">> Leon stands up and KICKS the cellar door open for you!");
             Game.isCellarLocked = false;
             p.replaceItem("Full water bottle", "Empty water bottle");
-        } else if (current.name.contains("The garage") && p.hasItem("Broken lever handle")) {
-            System.out.println("You can fix your broken lever handle here. Would you like to fix it? (y/n)");
-            if (sc.nextLine().equalsIgnoreCase("y")){
-                //TODO
-                p.replaceItem("Broken lever handle","Lever handle");
-                System.out.println("You now have a fixed lever handle");
-                return;
-            }else {
-                System.out.println("You decided to not fix the lever.");
-                return;
-            }
         }
+    }
+
+    // reads player input, puts it all to Upper case and checks if the player put in the letters correctly and pressed enter in time. Returns true or false.
+    private boolean runLeverMinigame(Scanner sc) {
+        String targetLetters = generateRandomLetters(letters);
+        System.out.println("\n--- Lever Fix Minigame ---");
+        System.out.println("Type these " + letters + " letters within 3 seconds:");
+        System.out.println(">> " + targetLetters);
+        System.out.print("Enter letters: ");
+
+        long start = System.nanoTime();
+        String input = sc.nextLine();
+        String inputUpperCase = input.toUpperCase();
+        long elapsedMs = (System.nanoTime() - start) / 1_000_000;
+
+        if (elapsedMs > leverTime) {
+            System.out.println("Too slow. (" + elapsedMs + "ms)");
+            return false;
+        }
+        if (!inputUpperCase.equals(targetLetters)) {
+            System.out.println("Incorrect.");
+            return false;
+        }
+        return true;
+    }
+
+    // Generates random letters in the alphabet
+    private String generateRandomLetters(int len) {
+        Random r = new Random();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = (char) ('A' + r.nextInt(26));
+            sb.append(c);
+        }
+        return sb.toString();
     }
 }
