@@ -7,6 +7,12 @@ public class Player {
     // Makes an inventory for the player
     public ArrayList<String> inventory = new ArrayList<>(3);
     public int currentRoomIndex = 0;
+
+    // Safe puzzle state (Apartment 102)
+    public boolean safeDiscovered = false;
+    public boolean safeSolved = false;
+    public int safeProgress = 0; // 0->need Rotating gear, 1->need Weighted cube, 2->need Lever handle
+
     public Player(String n) {
         this.name = n;
     }

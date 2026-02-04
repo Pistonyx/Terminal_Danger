@@ -10,10 +10,10 @@ import java.util.Scanner;
 
 public class ItemInteract implements GameCommand{
     @Override
-    public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+    public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         if (p.inventory.isEmpty()){
             System.out.println("You have no items to interact with.");
-            return;
+            return "";
         }
 
         System.out.println("Inventory: " + p.inventory);
@@ -42,6 +42,7 @@ public class ItemInteract implements GameCommand{
         } catch (Exception e) {
             System.out.println("Invalid choice.");
         }
+        return "";
     }
 
     private Item findItemByName(GameData data, String itemName) {

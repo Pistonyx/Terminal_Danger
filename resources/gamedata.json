@@ -37,16 +37,22 @@
       "description": "I can't use this for anything. I should try to fix it in the garage."
     },
     {
-      "id": "item_lever_handle",
-      "name": "Lever handle",
-      "type": "QUEST",
-      "description": "Horray its fixed!! What do I do with it now..."
-    },
-    {
       "id": "item_paper",
       "name": "A piece of paper",
       "type": "QUEST/CONSUMABLE",
-      "description": "There seems to be something written on the paper."
+      "description": "'Caesar cipher with a shift of 1... what could this be for?'"
+    },
+    {
+      "id": "item_lever_handle",
+      "name": "Lever handle",
+      "type": "QUEST",
+      "description": "Hooray its fixed!! What do I do with it now..."
+    },
+    {
+      "id": "item_code",
+      "name": "Code",
+      "type": "QUEST",
+      "description": "Theres a code here but its encrypted...(TQTFKFDOB) I should try to decipher it."
     }
   ],
   "characters": [

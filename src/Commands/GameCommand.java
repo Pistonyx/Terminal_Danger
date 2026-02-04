@@ -4,5 +4,5 @@ import Playuh.Room;
 import Playuh.Item;
 import java.util.ArrayList;
 public interface GameCommand {
-    void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items);
+    String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items);
 }

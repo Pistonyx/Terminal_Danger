@@ -14,32 +14,129 @@ public class InteractCommand implements GameCommand {
     private int letters = 5;
     private long leverTime = 3000;
 
-    public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+    public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room current = rooms.get(p.currentRoomIndex);
         Scanner sc = new Scanner(System.in);
 
         // Lever puzzle
-        // uses the runLeverMinigame and then checks if it returned true or false. Based on that it outputs 2 texts.
-        if (current.name != null && current.name.contains("The garage") && p.hasItem("Broken lever handle")) {
+        // uses the runLeverMinigame and then checks if it returned true or false. Based on that, it outputs 2 texts.
+        if (current.name.contains("The garage") && p.hasItem("Broken lever handle")) {
             System.out.print("You can fix your broken lever handle here. You will have 3 seconds to write 5 randomly generated letters. Start fixing it? (y/n): ");
             if (!sc.nextLine().equalsIgnoreCase("y")) {
-                return;
+                return "LEVER_FIX_CANCELLED";
             }
 
             boolean won = runLeverMinigame(sc);
             if (won) {
                 p.replaceItem("Broken lever handle", "Lever handle");
                 System.out.println("Success! You fixed the lever handle.");
+                return "LEVER_FIX_SUCCESS";
             } else {
                 System.out.println("You failed to fix it in time. The lever handle is still broken.");
+                return "LEVER_FIX_FAILED";
             }
-            return;
         }
 
         // If there's no NPC, interacting does nothing
         if (current.npc == null) {
             System.out.println("Nothing to do here.");
-            return;
+            return "INTERACT_NO_NPC";
+        }
+
+        // Always show NPC bio + dialogue when interacting
+        current.npc.showBio();
+
+        // Safe logic (Apartment 102, Tobias Reviero)
+        if (current.name != null
+                && current.name.contains("102")
+                && current.npc.name != null
+                && current.npc.name.contains("Tobias Reviero")) {
+
+            // First time discovery requires the Small key, and consumes it.
+            if (!p.safeDiscovered) {
+                if (!p.hasItem("Small key")) {
+                    System.out.println("Tobias Reviero: 'There's a safe back there... if only we had a small key to access the mechanism.'");
+                    return "SAFE_NEEDS_KEY_TO_DISCOVER";
+                }
+
+                System.out.println("Tobias Reviero: 'I found a safe in the back... but I can't open it. It's locked by a mechanism.'");
+                removeFirstIgnoreCase(p.inventory, "Small key");
+                p.safeDiscovered = true;
+            }
+
+            // After discovery: no key required anymore
+            if (p.safeSolved) {
+                System.out.println("Tobias Reviero: 'The safe is already open. We got what we needed.'");
+                return "SAFE_ALREADY_SOLVED";
+            }
+
+            System.out.print("\nTry to unlock the safe? (y/n): ");
+            if (!sc.nextLine().equalsIgnoreCase("y")) {
+                System.out.println("You decide to leave the safe alone for now.");
+                return "SAFE_NOT_ATTEMPTED";
+            }
+
+            if (p.safeProgress == 0) {
+                System.out.println("There seems to be a hole that can fit a gear.");
+            } else if (p.safeProgress == 1) {
+                System.out.println("Now theres some square shape.");
+            } else if (p.safeProgress == 2) {
+                System.out.println("I need a lever for this one.");
+            }
+
+            System.out.println("\n--- SAFE MECHANISM ---");
+            System.out.println("Press 0 to cancel.");
+            System.out.println("Inventory: " + p.inventory);
+            System.out.print("Select item index to use on the safe (1-" + p.inventory.size() + "): ");
+
+            int idx;
+            try {
+                idx = Integer.parseInt(sc.nextLine());
+            } catch (Exception e) {
+                System.out.println("Invalid choice.");
+                return "SAFE_INVALID_INPUT";
+            }
+
+            if (idx == 0) {
+                return "SAFE_CANCELLED";
+            }
+
+            if (idx < 1 || idx > p.inventory.size()) {
+                System.out.println("Index out of bounds of inventory.");
+                return "SAFE_INVALID_INDEX";
+            }
+
+            String chosen = p.inventory.get(idx - 1);
+            // sets the order for safeProgress
+            String[] order = new String[] { "Rotating gear", "Weighted cube", "Lever handle" };
+            String needed = order[p.safeProgress];
+
+            if (!chosen.equalsIgnoreCase(needed)) {
+                System.out.println("That doesn't fit.");
+                System.out.println(">> The mechanism doesn't move.");
+                return "SAFE_WRONG_ITEM";
+            }
+
+            // removes the item from the inventory after youve used it
+            removeFirstIgnoreCase(p.inventory, needed);
+            System.out.println(">> Installed: " + needed);
+
+            p.safeProgress++;
+
+            if (p.safeProgress >= order.length) {
+                if (!p.inventory.contains("Code")) {
+                    p.inventory.add("Code");
+                }
+
+                p.safeSolved = true;
+                p.safeProgress = 0;
+
+                System.out.println("\nThe mechanism clicks... the safe opens!");
+                System.out.println(">> You received: Code");
+                return "SAFE_SOLVED_CODE_RECEIVED";
+            }
+
+            return "SAFE_PROGRESS_" + p.safeProgress;
         }
 
         // Water Bottle Puzzle
@@ -48,10 +145,10 @@ public class InteractCommand implements GameCommand {
             if (sc.nextLine().equalsIgnoreCase("y")) {
                 p.replaceItem("Empty water bottle", "Full water bottle");
                 System.out.println("You now have a Full water bottle.");
-                return;
+                return "BOTTLE_FILLED";
             } else {
                 System.out.println("You didn't fill up your bottle");
-                return;
+                return "BOTTLE_FILL_DECLINED";
             }
         }
         // Cellar Unlocking using Leon
@@ -60,6 +157,19 @@ public class InteractCommand implements GameCommand {
             System.out.println(">> Leon stands up and KICKS the cellar door open for you!");
             Game.isCellarLocked = false;
             p.replaceItem("Full water bottle", "Empty water bottle");
+            return "CELLAR_UNLOCKED";
+        }
+
+        return "INTERACT_NO_EFFECT";
+    }
+
+    private void removeFirstIgnoreCase(ArrayList<String> list, String itemName) {
+        for (int i = 0; i < list.size(); i++) {
+            String v = list.get(i);
+            if (v != null && v.equalsIgnoreCase(itemName)) {
+                list.remove(i);
+                return;
+            }
         }
     }
 

@@ -9,18 +9,18 @@ public class DropCommand implements GameCommand{
 
       // Drops an item from inventory based on user input
 
-    public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+    public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room current = rooms.get(p.currentRoomIndex);
 
         // Only allows dropping items while in the Storage room
         if (current.getId() == null || !current.getId().equals("loc_storage")) {
             System.out.println("You can only drop items in the Storage room.");
-            return;
+            return "";
         }
 
         if (p.inventory.isEmpty()) {
             System.out.println("Nothing to drop.");
-            return;
+            return "";
         }
 
         System.out.println("Inventory: " + p.inventory);
@@ -40,5 +40,6 @@ public class DropCommand implements GameCommand{
         } catch (Exception e) {
             System.out.println("Invalid choice.");
         }
+        return "";
     }
 }

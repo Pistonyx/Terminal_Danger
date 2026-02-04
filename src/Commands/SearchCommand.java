@@ -7,7 +7,7 @@ import Playuh.Room;
 import Playuh.Item;
 
 public class SearchCommand implements GameCommand{
-    public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+    public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room current = rooms.get(p.currentRoomIndex);
 
         // If we're in the Storage room, allow picking up stored items first
@@ -16,7 +16,7 @@ public class SearchCommand implements GameCommand{
 
             if (p.inventory.size() >= 3) {
                 System.out.println(">> Your inventory is full!");
-                return;
+                return "";
             }
 
             System.out.print("Pick up which item? Enter index (1-" + current.storedItems.size() + "), or 0 to cancel: ");
@@ -24,7 +24,7 @@ public class SearchCommand implements GameCommand{
 
             try {
                 int idx = Integer.parseInt(sc.nextLine());
-                if (idx == 0) return;
+                if (idx == 0) return "";
 
                 if (idx >= 1 && idx <= current.storedItems.size()) {
                     String picked = current.storedItems.remove(idx - 1);
@@ -36,7 +36,7 @@ public class SearchCommand implements GameCommand{
             } catch (Exception e) {
                 System.out.println("Invalid choice.");
             }
-            return;
+            return "";
         }
 
         // Normal room search logic (original behavior)
@@ -46,7 +46,7 @@ public class SearchCommand implements GameCommand{
             // Prevent getting a full water bottle from searching (must be obtained via the puzzle)
             if (found != null && found.equalsIgnoreCase("Full water bottle")) {
                 System.out.println("\nYou search the room, but find nothing.");
-                return;
+                return "";
             }
 
             System.out.print("\nYou found a [" + found + "]. Pick up? (y/n): ");
@@ -66,5 +66,6 @@ public class SearchCommand implements GameCommand{
         } else {
             System.out.println("\nYou search the room, but find nothing.");
         }
+        return "";
     }
 }

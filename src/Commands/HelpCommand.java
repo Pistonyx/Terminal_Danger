@@ -12,7 +12,7 @@ public class HelpCommand implements GameCommand {
         this.file = file;
     }
 
-    public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+    public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         System.out.println("\n--- AVAILABLE COMMANDS ---");
         // Reads and prints help file; reports missing file
         try {
@@ -23,5 +23,6 @@ public class HelpCommand implements GameCommand {
             System.out.println("Help file missing.");
         }
         System.out.println("--------------------------");
+        return "";
     }
 }

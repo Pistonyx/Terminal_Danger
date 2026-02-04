@@ -6,12 +6,13 @@ import MainGame.Game;
 import Playuh.*;
 
 public class MovePrevCommand implements GameCommand{
-    public void execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
+    public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         // Moves player back a room unless they're at the start
         if (p.currentRoomIndex > 0) {
             p.currentRoomIndex--;
         } else {
             System.out.println("You are at the entrance.");
         }
+        return "";
     }
 }
