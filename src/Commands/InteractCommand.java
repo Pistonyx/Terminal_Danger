@@ -1,6 +1,7 @@
 package Commands;
-import Commands.GameCommand;
+
 import MainGame.Game;
+import MainGame.Texts;
 import Playuh.Item;
 import Playuh.Player;
 import Playuh.Room;
@@ -21,7 +22,7 @@ public class InteractCommand implements GameCommand {
         // Lever puzzle
         // uses the runLeverMinigame and then checks if it returned true or false. Based on that, it outputs 2 texts.
         if (current.name.contains("The garage") && p.hasItem("Broken lever handle")) {
-            System.out.print("You can fix your broken lever handle here. You will have 3 seconds to write 5 randomly generated letters. Start fixing it? (y/n): ");
+            System.out.print(Texts.t("interact.lever.prompt") + " ");
             if (!sc.nextLine().equalsIgnoreCase("y")) {
                 return "LEVER_FIX_CANCELLED";
             }
@@ -29,22 +30,51 @@ public class InteractCommand implements GameCommand {
             boolean won = runLeverMinigame(sc);
             if (won) {
                 p.replaceItem("Broken lever handle", "Lever handle");
-                System.out.println("Success! You fixed the lever handle.");
+                System.out.println(Texts.t("interact.lever.success"));
                 return "LEVER_FIX_SUCCESS";
             } else {
-                System.out.println("You failed to fix it in time. The lever handle is still broken.");
+                System.out.println(Texts.t("interact.lever.failed"));
                 return "LEVER_FIX_FAILED";
             }
         }
 
         // If there's no NPC, interacting does nothing
         if (current.npc == null) {
-            System.out.println("Nothing to do here.");
+            System.out.println(Texts.t("interact.nothing"));
             return "INTERACT_NO_NPC";
         }
 
         // Always show NPC bio + dialogue when interacting
         current.npc.showBio();
+
+        // Final choice: kill or spare (only once)
+        if (!Game.missionComplete && current.name.contains("The cold cellar")) {
+
+            System.out.print("\nThe criminal is right in front of you. Youre confronted with a choise. Will you kill him? Or will you spare him and detain him? (k/s): ");
+            String choice = sc.nextLine();
+
+            if (choice.equalsIgnoreCase("k")) {
+                System.out.println("You chose to kill the criminal.");
+                Game.missionComplete = true;
+                return "CRIMINAL_KILLED";
+            } else if (choice.equalsIgnoreCase("s")) {
+                System.out.println("You chose to spare the criminal.");
+                Game.missionComplete = true;
+                return "CRIMINAL_SPARED";
+            } else {
+                // Hesitation outcome depends on whether Leon opened the cellar
+                if (!Game.usedLeonToOpenCellar) {
+                    System.out.println("You hesitate... but Leon doesn't.");
+                    System.out.println(">> Leon steps in and kills the criminal.");
+                    Game.missionComplete = true;
+                    return "CRIMINAL_KILLED_BY_LEON";
+                } else {
+                    System.out.println("You hesitate... Leon tries to apprehend him but he's too tired and in the confusion, the criminal gets away.");
+                    Game.missionComplete = true;
+                    return "CRIMINAL_ESCAPED";
+                }
+            }
+        }
 
         // Safe logic (Apartment 102, Tobias Reviero)
         if (current.name != null
@@ -156,6 +186,7 @@ public class InteractCommand implements GameCommand {
             System.out.println("'Leon: Wait a second...is that..Dziekuje! Exactly what I needed.'");
             System.out.println(">> Leon stands up and KICKS the cellar door open for you!");
             Game.isCellarLocked = false;
+            Game.usedLeonToOpenCellar = true;
             p.replaceItem("Full water bottle", "Empty water bottle");
             return "CELLAR_UNLOCKED";
         }

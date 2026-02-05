@@ -100,7 +100,7 @@
       "name": "The criminal",
       "role": "NPC",
       "homeLocationId": "loc_cellar",
-      "dialogue": "A criminal that deserves to be put down."
+      "bio": "A criminal that deserves to be put down. What will you do?"
     }
 
   ],

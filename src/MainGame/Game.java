@@ -15,7 +15,10 @@ public class Game {
     public static boolean isCellarLocked = true;
     public static Map<String, GameCommand> commandMap = new HashMap<>();
     public static Scanner sc = new Scanner(System.in);
-
+    // Marks when the final choice has been made in the cellar (kill/spare)
+    public static boolean missionComplete = false;
+    // Tracks whether Leon was used to open the cellar (affects "hesitate" outcome)
+    public static boolean usedLeonToOpenCellar = false;
     /**
      * Initializes game; runs input loop; processes commands
      */
@@ -24,7 +27,7 @@ public class Game {
         ArrayList<Room> gameRooms = data.locations;
         // Loads the rooms from gamedata json
         if (gameRooms == null || gameRooms.isEmpty()) {
-            System.out.println("Fatal Error: No rooms loaded from gamedata.json");
+            System.out.println("No rooms loaded from gamedata.json");
             return;
         }
 
@@ -83,6 +86,11 @@ public class Game {
                     System.out.println("");
                 }
                 commandMap.get(action).execute(timofey, gameRooms, gameItems);
+                // breaks the loop, finishes the game
+                if (missionComplete) {
+                    running = false;
+                    System.out.println("\n=== THE END ===");
+                }
             } else {
                 for (int i = 0; i < 25; i++) {
                     System.out.println("");
@@ -91,7 +99,7 @@ public class Game {
             }
         }
     }
-        // Checks if there are any NPC's in the room
+    // Checks if there are any NPC's in the room
     public static void checkNPCPresence(Room r) {
         if (r.npc != null) System.out.println("[!] " + r.npc.name + " is here. Press 'i' to interact.");
     }
