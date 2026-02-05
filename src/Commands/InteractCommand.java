@@ -50,26 +50,26 @@ public class InteractCommand implements GameCommand {
         // Final choice: kill or spare (only once)
         if (!Game.missionComplete && current.name.contains("The cold cellar")) {
 
-            System.out.print("\nThe criminal is right in front of you. Youre confronted with a choice. Will you kill him? Or will you spare him and detain him? (k/s): ");
+            System.out.print(Texts.t("interact.criminal.choicePrompt"));
             String choice = sc.nextLine();
 
             if (choice.equalsIgnoreCase("k")) {
-                System.out.println("You chose to kill the criminal.");
+                System.out.println(Texts.t("interact.criminal.killed"));
                 Game.missionComplete = true;
                 return "CRIMINAL_KILLED";
             } else if (choice.equalsIgnoreCase("s")) {
-                System.out.println("You chose to spare the criminal.");
+                System.out.println(Texts.t("interact.criminal.spared"));
                 Game.missionComplete = true;
                 return "CRIMINAL_SPARED";
             } else {
                 // Hesitation outcome depends on whether Leon opened the cellar
                 if (!Game.usedLeonToOpenCellar) {
-                    System.out.println("You hesitate... but Leon doesn't.");
-                    System.out.println(">> Leon steps in and kills the criminal.");
+                    System.out.println(Texts.t("interact.criminal.hesitate.leonKills"));
+                    System.out.println(Texts.t("interact.criminal.hesitate.leonKills.detail"));
                     Game.missionComplete = true;
                     return "CRIMINAL_KILLED_BY_LEON";
                 } else {
-                    System.out.println("You hesitate... Leon tries to apprehend him but he's too tired and in the confusion, the criminal gets away.");
+                    System.out.println(Texts.t("interact.criminal.hesitate.escaped"));
                     Game.missionComplete = true;
                     return "CRIMINAL_ESCAPED";
                 }
@@ -85,45 +85,45 @@ public class InteractCommand implements GameCommand {
             // First time discovery requires the Small key, and consumes it.
             if (!p.safeDiscovered) {
                 if (!p.hasItem("Small key")) {
-                    System.out.println("Tobias Reviero: 'There's a safe back there... if only we had a small key to access the mechanism.'");
+                    System.out.println(Texts.t("interact.safe.needsKeyToDiscover"));
                     return "SAFE_NEEDS_KEY_TO_DISCOVER";
                 }
 
-                System.out.println("Tobias Reviero: 'I found a safe in the back... but I can't open it. It's locked by a mechanism.'");
+                System.out.println(Texts.t("interact.safe.discovered"));
                 removeFirstIgnoreCase(p.inventory, "Small key");
                 p.safeDiscovered = true;
             }
 
             // After discovery: no key required anymore
             if (p.safeSolved) {
-                System.out.println("Tobias Reviero: 'The safe is already open. We got what we needed.'");
+                System.out.println(Texts.t("interact.safe.alreadySolved"));
                 return "SAFE_ALREADY_SOLVED";
             }
 
-            System.out.print("\nTry to unlock the safe? (y/n): ");
+            System.out.print(Texts.t("interact.safe.tryUnlockPrompt"));
             if (!sc.nextLine().equalsIgnoreCase("y")) {
-                System.out.println("You decide to leave the safe alone for now.");
+                System.out.println(Texts.t("interact.safe.notAttempted"));
                 return "SAFE_NOT_ATTEMPTED";
             }
 
             if (p.safeProgress == 0) {
-                System.out.println("There seems to be a hole that can fit a gear.");
+                System.out.println(Texts.t("interact.safe.hint.0"));
             } else if (p.safeProgress == 1) {
-                System.out.println("Now theres some square shape.");
+                System.out.println(Texts.t("interact.safe.hint.1"));
             } else if (p.safeProgress == 2) {
-                System.out.println("I need a lever for this one.");
+                System.out.println(Texts.t("interact.safe.hint.2"));
             }
 
-            System.out.println("\n--- SAFE MECHANISM ---");
-            System.out.println("Press 0 to cancel.");
-            System.out.println("Inventory: " + p.inventory);
-            System.out.print("Select item index to use on the safe (1-" + p.inventory.size() + "): ");
+            System.out.println(Texts.t("interact.safe.header"));
+            System.out.println(Texts.t("interact.safe.cancel"));
+            System.out.println(Texts.tf("interact.safe.inventory", p.inventory));
+            System.out.print(Texts.tf("interact.safe.selectIndex", p.inventory.size()));
 
             int idx;
             try {
                 idx = Integer.parseInt(sc.nextLine());
             } catch (Exception e) {
-                System.out.println("Invalid choice.");
+                System.out.println(Texts.t("interact.safe.invalidChoice"));
                 return "SAFE_INVALID_INPUT";
             }
 
@@ -132,7 +132,7 @@ public class InteractCommand implements GameCommand {
             }
 
             if (idx < 1 || idx > p.inventory.size()) {
-                System.out.println("Index out of bounds of inventory.");
+                System.out.println(Texts.t("interact.safe.indexOutOfBounds"));
                 return "SAFE_INVALID_INDEX";
             }
 
@@ -142,14 +142,14 @@ public class InteractCommand implements GameCommand {
             String needed = order[p.safeProgress];
 
             if (!chosen.equalsIgnoreCase(needed)) {
-                System.out.println("That doesn't fit.");
-                System.out.println(">> The mechanism doesn't move.");
+                System.out.println(Texts.t("interact.safe.doesNotFit"));
+                System.out.println(Texts.t("interact.safe.mechanismNoMove"));
                 return "SAFE_WRONG_ITEM";
             }
 
             // removes the item from the inventory after youve used it
             removeFirstIgnoreCase(p.inventory, needed);
-            System.out.println(">> Installed: " + needed);
+            System.out.println(Texts.tf("interact.safe.installed", needed));
 
             p.safeProgress++;
 
@@ -161,8 +161,8 @@ public class InteractCommand implements GameCommand {
                 p.safeSolved = true;
                 p.safeProgress = 0;
 
-                System.out.println("\nThe mechanism clicks... the safe opens!");
-                System.out.println(">> You received: Code");
+                System.out.println(Texts.t("interact.safe.opened"));
+                System.out.println(Texts.t("interact.safe.receivedCode"));
                 return "SAFE_SOLVED_CODE_RECEIVED";
             }
 
@@ -171,20 +171,20 @@ public class InteractCommand implements GameCommand {
 
         // Water Bottle Puzzle
         if ((current.name.contains("101") || current.name.contains("102")) && p.hasItem("Empty water bottle")) {
-            System.out.print("\nYo you lowkey have an empty water bottle. Do you want to use the sink to fill your bottle with water? (y/n): ");
+            System.out.print(Texts.t("interact.bottle.fillPrompt"));
             if (sc.nextLine().equalsIgnoreCase("y")) {
                 p.replaceItem("Empty water bottle", "Full water bottle");
-                System.out.println("You now have a Full water bottle.");
+                System.out.println(Texts.t("interact.bottle.filled"));
                 return "BOTTLE_FILLED";
             } else {
-                System.out.println("You didn't fill up your bottle");
+                System.out.println(Texts.t("interact.bottle.declined"));
                 return "BOTTLE_FILL_DECLINED";
             }
         }
         // Cellar Unlocking using Leon
         else if (current.npc != null && current.npc.name != null && current.npc.name.contains("Leon") && p.hasItem("Full water bottle")) {
-            System.out.println("'Leon: Wait a second...is that..Dziekuje! Exactly what I needed.'");
-            System.out.println(">> Leon stands up and KICKS the cellar door open for you!");
+            System.out.println(Texts.t("interact.leon.thanks"));
+            System.out.println(Texts.t("interact.leon.kicksDoor"));
             Game.isCellarLocked = false;
             Game.usedLeonToOpenCellar = true;
             p.replaceItem("Full water bottle", "Empty water bottle");
@@ -207,10 +207,10 @@ public class InteractCommand implements GameCommand {
     // reads player input, puts it all to Upper case and checks if the player put in the letters correctly and pressed enter in time. Returns true or false.
     private boolean runLeverMinigame(Scanner sc) {
         String targetLetters = generateRandomLetters(letters);
-        System.out.println("\n--- Lever Fix Minigame ---");
-        System.out.println("Type these " + letters + " letters within 3 seconds:");
-        System.out.println(">> " + targetLetters);
-        System.out.print("Enter letters: ");
+        System.out.println(Texts.t("interact.leverMinigame.header"));
+        System.out.println(Texts.tf("interact.leverMinigame.typeWithin", letters));
+        System.out.println(Texts.tf("interact.leverMinigame.showTarget", targetLetters));
+        System.out.print(Texts.t("interact.leverMinigame.enterLetters"));
 
         long start = System.nanoTime();
         String input = sc.nextLine();
@@ -218,11 +218,11 @@ public class InteractCommand implements GameCommand {
         long elapsedMs = (System.nanoTime() - start) / 1_000_000;
 
         if (elapsedMs > leverTime) {
-            System.out.println("Too slow. (" + elapsedMs + "ms)");
+            System.out.println(Texts.tf("interact.leverMinigame.tooSlow", elapsedMs));
             return false;
         }
         if (!inputUpperCase.equals(targetLetters)) {
-            System.out.println("Incorrect.");
+            System.out.println(Texts.t("interact.leverMinigame.incorrect"));
             return false;
         }
         return true;
