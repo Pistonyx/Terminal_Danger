@@ -50,7 +50,7 @@ public class InteractCommand implements GameCommand {
         // Final choice: kill or spare (only once)
         if (!Game.missionComplete && current.name.contains("The cold cellar")) {
 
-            System.out.print("\nThe criminal is right in front of you. Youre confronted with a choise. Will you kill him? Or will you spare him and detain him? (k/s): ");
+            System.out.print("\nThe criminal is right in front of you. Youre confronted with a choice. Will you kill him? Or will you spare him and detain him? (k/s): ");
             String choice = sc.nextLine();
 
             if (choice.equalsIgnoreCase("k")) {
