@@ -101,7 +101,7 @@ public class InteractCommand implements GameCommand {
             }
 
             System.out.print(Texts.t("interact.safe.tryUnlockPrompt"));
-            if (!sc.nextLine().equalsIgnoreCase("y")) {
+            if (!sc.nextLine().equalsIgnoreCase("y")&& !items.isEmpty()) {
                 System.out.println(Texts.t("interact.safe.notAttempted"));
                 return "SAFE_NOT_ATTEMPTED";
             }
