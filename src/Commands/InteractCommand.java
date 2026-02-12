@@ -10,17 +10,35 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Handles complex interactions between the player, NPCs, and environmental puzzles.
+ * This class manages the Garage lever fix, the Apartment 102 safe, NPC dialogues,
+ * and the final moral choice in the cellar.
+ * * @author Trong Hieu Tran
+ */
 public class InteractCommand implements GameCommand {
 
+    /** Number of random letters generated for the lever minigame. */
     private int letters = 5;
+
+    /** Time limit in milliseconds allowed for the lever minigame. */
     private long leverTime = 3000;
 
+    /**
+     * Executes interaction logic based on the player's current room and inventory.
+     * Evaluates room-specific triggers such as puzzles, NPC presence, or item usage.
+     *
+     * @param p      The player performing the interaction.
+     * @param rooms  The list of all rooms in the game.
+     * @param items  The list of all world items.
+     * @return       A String status code indicating the outcome of the interaction.
+     */
+    @Override
     public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room current = rooms.get(p.currentRoomIndex);
         Scanner sc = new Scanner(System.in);
 
-        // Lever puzzle
-        // uses the runLeverMinigame and then checks if it returned true or false. Based on that, it outputs 2 texts.
+        // Lever puzzle: Triggered in the Garage with a broken handle
         if (current.name.contains("The garage") && p.hasItem("Broken lever handle")) {
             System.out.print(Texts.t("interact.lever.prompt") + " ");
             if (!sc.nextLine().equalsIgnoreCase("y")) {
@@ -38,18 +56,17 @@ public class InteractCommand implements GameCommand {
             }
         }
 
-        // If there's no NPC, interacting does nothing
+        // NPC Validation: Interacting requires an NPC to be present
         if (current.npc == null) {
             System.out.println(Texts.t("interact.nothing"));
             return "INTERACT_NO_NPC";
         }
 
-        // Always show NPC bio + dialogue when interacting
+        // Always display NPC bio and dialogue upon interaction
         current.npc.showBio();
 
-        // Final choice: kill or spare (only once)
+        // Final Choice: Kill or Spare the criminal in the cold cellar
         if (!Game.missionComplete && current.name.contains("The cold cellar")) {
-
             System.out.print(Texts.t("interact.criminal.choicePrompt"));
             String choice = sc.nextLine();
 
@@ -62,7 +79,7 @@ public class InteractCommand implements GameCommand {
                 Game.missionComplete = true;
                 return "CRIMINAL_SPARED";
             } else {
-                // Hesitation outcome depends on whether Leon opened the cellar
+                // Hesitation outcome: Depends on whether Leon was used to open the room
                 if (!Game.usedLeonToOpenCellar) {
                     System.out.println(Texts.t("interact.criminal.hesitate.leonKills"));
                     System.out.println(Texts.t("interact.criminal.hesitate.leonKills.detail"));
@@ -76,13 +93,13 @@ public class InteractCommand implements GameCommand {
             }
         }
 
-        // Safe logic (Apartment 102, Tobias Reviero)
+        // Safe Puzzle: Apartment 102 (Tobias Reviero)
         if (current.name != null
                 && current.name.contains("102")
                 && current.npc.name != null
                 && current.npc.name.contains("Tobias Reviero")) {
 
-            // First time discovery requires the Small key, and consumes it.
+            // Step 1: Discovering the safe requires the Small key
             if (!p.safeDiscovered) {
                 if (!p.hasItem("Small key")) {
                     System.out.println(Texts.t("interact.safe.needsKeyToDiscover"));
@@ -94,24 +111,20 @@ public class InteractCommand implements GameCommand {
                 p.safeDiscovered = true;
             }
 
-            // After discovery: no key required anymore
             if (p.safeSolved) {
                 System.out.println(Texts.t("interact.safe.alreadySolved"));
                 return "SAFE_ALREADY_SOLVED";
             }
 
             System.out.print(Texts.t("interact.safe.tryUnlockPrompt"));
-            if (!sc.nextLine().equalsIgnoreCase("y")&& !items.isEmpty()) {
+            if (!sc.nextLine().equalsIgnoreCase("y") && !items.isEmpty()) {
                 System.out.println(Texts.t("interact.safe.notAttempted"));
                 return "SAFE_NOT_ATTEMPTED";
             }
 
-            if (p.safeProgress == 0) {
-                System.out.println(Texts.t("interact.safe.hint.0"));
-            } else if (p.safeProgress == 1) {
-                System.out.println(Texts.t("interact.safe.hint.1"));
-            } else if (p.safeProgress == 2) {
-                System.out.println(Texts.t("interact.safe.hint.2"));
+            // Display hints based on puzzle progress
+            if (p.safeProgress >= 0 && p.safeProgress <= 2) {
+                System.out.println(Texts.t("interact.safe.hint." + p.safeProgress));
             }
 
             System.out.println(Texts.t("interact.safe.header"));
@@ -127,9 +140,7 @@ public class InteractCommand implements GameCommand {
                 return "SAFE_INVALID_INPUT";
             }
 
-            if (idx == 0) {
-                return "SAFE_CANCELLED";
-            }
+            if (idx == 0) return "SAFE_CANCELLED";
 
             if (idx < 1 || idx > p.inventory.size()) {
                 System.out.println(Texts.t("interact.safe.indexOutOfBounds"));
@@ -137,7 +148,6 @@ public class InteractCommand implements GameCommand {
             }
 
             String chosen = p.inventory.get(idx - 1);
-            // sets the order for safeProgress
             String[] order = new String[] { "Rotating gear", "Weighted cube", "Lever handle" };
             String needed = order[p.safeProgress];
 
@@ -147,20 +157,17 @@ public class InteractCommand implements GameCommand {
                 return "SAFE_WRONG_ITEM";
             }
 
-            // removes the item from the inventory after youve used it
             removeFirstIgnoreCase(p.inventory, needed);
             System.out.println(Texts.tf("interact.safe.installed", needed));
-
             p.safeProgress++;
 
+            // Check for puzzle completion
             if (p.safeProgress >= order.length) {
                 if (!p.inventory.contains("Code")) {
                     p.inventory.add("Code");
                 }
-
                 p.safeSolved = true;
                 p.safeProgress = 0;
-
                 System.out.println(Texts.t("interact.safe.opened"));
                 System.out.println(Texts.t("interact.safe.receivedCode"));
                 return "SAFE_SOLVED_CODE_RECEIVED";
@@ -169,7 +176,7 @@ public class InteractCommand implements GameCommand {
             return "SAFE_PROGRESS_" + p.safeProgress;
         }
 
-        // Water Bottle Puzzle
+        // Secondary Puzzle: Filling the Water Bottle
         if ((current.name.contains("101") || current.name.contains("102")) && p.hasItem("Empty water bottle")) {
             System.out.print(Texts.t("interact.bottle.fillPrompt"));
             if (sc.nextLine().equalsIgnoreCase("y")) {
@@ -181,7 +188,8 @@ public class InteractCommand implements GameCommand {
                 return "BOTTLE_FILL_DECLINED";
             }
         }
-        // Cellar Unlocking using Leon
+
+        // Leon Interaction: Unlocking the cellar with a bottle
         else if (current.npc != null && current.npc.name != null && current.npc.name.contains("Leon") && p.hasItem("Full water bottle")) {
             System.out.println(Texts.t("interact.leon.thanks"));
             System.out.println(Texts.t("interact.leon.kicksDoor"));
@@ -194,6 +202,12 @@ public class InteractCommand implements GameCommand {
         return "INTERACT_NO_EFFECT";
     }
 
+    /**
+     * Utility method to remove an item from a list while ignoring character case.
+     *
+     * @param list     The list to remove the item from.
+     * @param itemName The name of the item to find and remove.
+     */
     private void removeFirstIgnoreCase(ArrayList<String> list, String itemName) {
         for (int i = 0; i < list.size(); i++) {
             String v = list.get(i);
@@ -204,7 +218,13 @@ public class InteractCommand implements GameCommand {
         }
     }
 
-    // reads player input, puts it all to Upper case and checks if the player put in the letters correctly and pressed enter in time. Returns true or false.
+    /**
+     * Executes the lever-fixing minigame. Requires the player to type a random
+     * sequence of letters within a specified time limit.
+     *
+     * @param sc The scanner to read player input.
+     * @return true if the input matches the target within the time limit; false otherwise.
+     */
     private boolean runLeverMinigame(Scanner sc) {
         String targetLetters = generateRandomLetters(letters);
         System.out.println(Texts.t("interact.leverMinigame.header"));
@@ -228,7 +248,12 @@ public class InteractCommand implements GameCommand {
         return true;
     }
 
-    // Generates random letters in the alphabet
+    /**
+     * Generates a string of random uppercase letters.
+     *
+     * @param len The length of the string to generate.
+     * @return A String of random uppercase characters.
+     */
     private String generateRandomLetters(int len) {
         Random r = new Random();
         StringBuilder sb = new StringBuilder(len);

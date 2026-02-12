@@ -8,7 +8,24 @@ import Playuh.Room;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class ItemInteract implements GameCommand{
+/**
+ * Handles player interaction with items currently held in their inventory.
+ * This command allows players to inspect items, retrieving detailed descriptions
+ * by cross-referencing inventory names with external data in gamedata.json.
+ * * @author Trong Hieu Tran
+ */
+public class ItemInteract implements GameCommand {
+
+    /**
+     * Executes the item interaction logic.
+     * Displays the player's inventory, prompts for an item selection, and
+     * attempts to load descriptive data for that item from the resources folder.
+     *
+     * @param p      The player interacting with their inventory.
+     * @param rooms  The list of rooms in the game environment.
+     * @param items  The global list of items.
+     * @return       An empty String as output is handled via standard console output.
+     */
     @Override
     public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         if (p.inventory.isEmpty()){
@@ -45,6 +62,15 @@ public class ItemInteract implements GameCommand{
         return "";
     }
 
+    /**
+     * Searches the provided GameData for an item matching a specific name.
+     * This helper method ensures that descriptive data can be retrieved even
+     * if the naming case in the inventory differs slightly from the JSON file.
+     *
+     * @param data     The loaded GameData object containing item definitions.
+     * @param itemName The name of the item to search for.
+     * @return         The Item object found in the data, or null if no match is found.
+     */
     private Item findItemByName(GameData data, String itemName) {
         if (data == null || data.items == null) return null;
 

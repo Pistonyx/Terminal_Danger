@@ -1,10 +1,11 @@
 package Testing;
 
-import Commands.GameCommand;
+import Commands.DropCommand;
 import Playuh.Item;
 import Playuh.Player;
 import Playuh.Room;
 import org.junit.jupiter.api.Test;
+import java.lang.reflect.Field;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -12,42 +13,48 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Unit tests for the DropCommand class.
+ * * @author Trong Hieu Tran
+ */
 public class DropTesting {
-    class StorageTest {
 
-        @Test
-        void testExecute_SuccessStoreItem() {
-            // Setup Data
-            Player player = new Player("test");
-            player.currentRoomIndex = 0;
-            player.inventory = new ArrayList<>(Arrays.asList("Flashlight", "Map"));
+    @Test
+    void testExecute_SuccessStoreItem() throws Exception {
+        // Setup Data
+        Player player = new Player("test");
+        player.currentRoomIndex = 0;
+        player.inventory = new ArrayList<>(Arrays.asList("Flashlight", "Map"));
 
-            Room storageRoom = new Room();
-            storageRoom.name = "Storage room";
-            storageRoom.storedItems = new ArrayList<>();
+        Room storageRoom = new Room();
+        storageRoom.name = "Storage room";
+        storageRoom.storedItems = new ArrayList<>();
 
-            ArrayList<Room> rooms = new ArrayList<>();
-            rooms.add(storageRoom);
+        Field idField = Room.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(storageRoom, "loc_storage");
 
-            // Simulate User Input ("1" to select the Flashlight)
-            String input = "1\n";
-            System.setIn(new ByteArrayInputStream(input.getBytes()));
+        ArrayList<Room> rooms = new ArrayList<>();
+        rooms.add(storageRoom);
 
-            // Execute
-            GameCommand actions = new GameCommand() {
-                @Override
-                public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
-                    return "";
-                }
-            };
-            actions.execute(player, rooms, new ArrayList<>());
+        // Simulate User Input ("1" for Flashlight)
+        String input = "1\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
 
-            // Assertions
-            assertEquals(1, player.inventory.size(), "Inventory should have 1 item left");
-            assertEquals("Flashlight", storageRoom.storedItems.get(0), "Storage should contain the Flashlight");
-            assertFalse(player.inventory.contains("Flashlight"), "Flashlight should be removed from player");
-        }
+        // Execute
+        DropCommand dropCmd = new DropCommand();
+        dropCmd.execute(player, rooms, new ArrayList<>());
+
+        // Assertions
+        // If successful, inventory should go from 2 to 1
+        assertEquals(1, player.inventory.size(), "Inventory should have 1 item left");
+
+        // The command should have added the item to storage
+        assertTrue(storageRoom.storedItems.contains("Flashlight"), "Storage should now contain the Flashlight");
+
+        // The player should no longer have it
+        assertFalse(player.inventory.contains("Flashlight"), "Flashlight should be removed from player");
     }
-
 }

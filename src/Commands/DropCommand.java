@@ -1,14 +1,37 @@
 package Commands;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 import Playuh.Player;
 import Playuh.Room;
 import Playuh.Item;
 
-public class DropCommand implements GameCommand{
+/**
+ * The DropCommand class handles the logic for a player removing an item
+ * from their inventory and placing it into a room's storage.
+ * In this game, dropping is restricted to specific storage locations.
+ * * @author Trong Hieu Tran
+ */
+public class DropCommand implements GameCommand {
 
-      // Drops an item from inventory based on user input
+    /**
+     * Default constructor for DropCommand.
+     * Required for instantiation within the Command Map.
+     */
+    public DropCommand() {
+    }
 
+    /**
+     * Executes the drop logic. Validates if the player is in the correct room,
+     * checks inventory status, and moves the selected item from the player
+     * to the room's stored items list.
+     *
+     * @param p      The player attempting to drop an item.
+     * @param rooms  The list of all rooms in the game environment.
+     * @param items  The global list of items (not used in this specific command).
+     * @return       An empty String, as the command prints results directly to the console.
+     */
+    @Override
     public String execute(Player p, ArrayList<Room> rooms, ArrayList<Item> items) {
         Room current = rooms.get(p.currentRoomIndex);
 

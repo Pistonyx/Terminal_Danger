@@ -13,7 +13,21 @@ import Playuh.Player;
 import Playuh.Room;
 import Playuh.Item;
 import MainGame.Game;
+
+/**
+ * Unit tests for the InteractCommand class.
+ * This test suite validates environmental puzzles (water bottle, safe),
+ * NPC interaction requirements, and the branching narrative paths
+ * regarding the final moral choice in the game.
+ * * @author Trong Hieu Tran
+ */
 public class InteractTesting {
+
+    /**
+     * Tests the successful filling of a water bottle.
+     * Verifies that the interaction returns the correct status code
+     * when a player possesses the required item in a valid room.
+     */
     @Test
     void testExecute_WaterBottleSuccess() {
         Player p = new Player("TestPlayer");
@@ -36,6 +50,12 @@ public class InteractTesting {
 
         assertEquals("BOTTLE_FILLED", result);
     }
+
+    /**
+     * Tests the safe puzzle logic when an incorrect item is provided.
+     * Ensures that the game correctly identifies a mismatch and does
+     * not consume the item from the player's inventory.
+     */
     @Test
     void testExecute_SafeWrongItem() {
         Player p = new Player("TestPlayer");
@@ -62,6 +82,10 @@ public class InteractTesting {
         assertEquals(2, p.inventory.size(), "Item should NOT be removed if it's wrong");
     }
 
+    /**
+     * Verifies that interacting with a room containing no NPC
+     * triggers the appropriate fall-through status code.
+     */
     @Test
     void testExecute_NoNPCAction() {
         // Setup a room with no NPC
@@ -79,6 +103,11 @@ public class InteractTesting {
 
         assertEquals("INTERACT_NO_NPC", result);
     }
+
+    /**
+     * Tests the "Spare" narrative choice in the final cellar encounter.
+     * Verifies that the choice is recorded and the mission is marked as complete.
+     */
     @Test
     void testExecute_CriminalSpared() {
         // Setup
@@ -106,9 +135,15 @@ public class InteractTesting {
         assertEquals("CRIMINAL_SPARED", result);
         assertTrue(MainGame.Game.missionComplete, "Mission should be marked as complete");
     }
+
+    /**
+     * Tests the "Hesitation" narrative outcome in the cellar.
+     * Verifies that if the player hesitates and Leon is available,
+     * Leon takes action, resulting in a specific game outcome.
+     */
     @Test
     void testExecute_CriminalKilledByLeon() {
-        // 1. Setup
+        // Setup
         MainGame.Game.missionComplete = false;
         MainGame.Game.usedLeonToOpenCellar = false; // Leon is nearby/ready
 
@@ -121,14 +156,14 @@ public class InteractTesting {
         ArrayList<Room> rooms = new ArrayList<>();
         rooms.add(cellar);
 
-        // 2. Mock Input: "wait" (not k or s, triggering the hesitation logic)
+        // Mock Input: "wait" (not k or s, triggering the hesitation logic)
         System.setIn(new java.io.ByteArrayInputStream("wait\n".getBytes()));
 
-        // 3. Execute
+        // Execute
         InteractCommand cmd = new InteractCommand();
         String result = cmd.execute(p, rooms, new ArrayList<>());
 
-        // 4. Assert
+        // Assert
         assertEquals("CRIMINAL_KILLED_BY_LEON", result);
     }
 }

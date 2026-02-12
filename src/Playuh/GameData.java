@@ -1,24 +1,41 @@
 package Playuh;
 
 import com.google.gson.Gson;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+/**
+ * Acts as the primary data container for the game's world state.
+ * This class facilitates the loading of items, characters, rooms, and quests
+ * from external JSON resources using the GSON library.
+ * * @author Trong Hieu Tran
+ */
 public class GameData {
+
+    /** List of all items defined in the game data. */
     public ArrayList<Item> items;
+
+    /** List of all characters (NPCs) defined in the game data. */
     public ArrayList<Character> characters;
+
+    /** List of all rooms (locations) defining the game map. */
     public ArrayList<Room> locations;
+
+    /** List of all quests available in the game data. */
     public ArrayList<Quest> quests;
 
-
-    //  Loads game data from a JSON file that is on the classpath
-    //  @param resourcePath path to the resource
-    //  return a GameData object filled with the loaded data
-
+    /**
+     * Loads game data from a JSON file located on the classpath.
+     * Utilizes UTF-8 encoding to ensure special characters in dialogue or
+     * descriptions are rendered correctly.
+     *
+     * @param resourcePath The path to the JSON resource file.
+     * @return A GameData object populated with the parsed JSON data.
+     * @throws RuntimeException If the resource is missing or parsing fails.
+     */
     public static GameData loadGameDataFromResources(String resourcePath) {
         Gson gson = new Gson();
 
@@ -37,12 +54,24 @@ public class GameData {
         }
     }
 
-    // loads data from gamdata json
+    /**
+     * Alias for {@link #loadGameDataFromResources(String)}.
+     * Provided for backwards compatibility with existing code calls.
+     *
+     * @param resourcePath The path to the JSON resource file.
+     * @return A GameData object populated with the parsed JSON data.
+     */
     public static GameData loadGamaDataFromResources(String resourcePath) {
         return loadGameDataFromResources(resourcePath);
     }
 
-    // find a location by its ID in the gamedata json file
+    /**
+     * Searches for a specific room within the loaded locations based on its unique ID.
+     *
+     * @param id The unique string identifier for the room.
+     * @return The Room object matching the provided ID.
+     * @throws IllegalArgumentException If no location with the specified ID exists.
+     */
     public Room findLocation(String id) {
         for (Room l : locations) {
             if (l.getId().equals(id)) {
