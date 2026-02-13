@@ -116,7 +116,6 @@ public class Game {
         commandMap.put("i", new InteractCommand());
         commandMap.put("d", new DropCommand());
         commandMap.put("items", new ItemInteract());
-        commandMap.put("quest", new QuestCommand());
     }
 
     /**
