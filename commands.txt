@@ -5,5 +5,4 @@
 [d] Drop          - Remove an item from your bag.
 [h] Help          - Display this list of commands.
 [items]           - Display an items description.
-[quest] Quest     - Display your current quests.
 [quit] Quit       - Exit the game.

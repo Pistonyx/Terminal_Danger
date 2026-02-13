@@ -42,7 +42,7 @@ This project implements an "Escape Room" style adventure where players navigate 
 ---
 
 ## 🎮 How to Play
-1. **Launch the Game:** Run the `Main` class.
+1. **Launch the Game:** Run the `Main` class (you may need to reinstall gson in the libraries if it doesn't work).
 2. **Navigation:** - Use `n` to move to the **Next** room.
     - Use `p` to move to the **Previous** room.
 3. **Exploration:** - Use `s` to **Search** for items or check the Storage Room.
@@ -50,7 +50,6 @@ This project implements an "Escape Room" style adventure where players navigate 
 4. **Management:**
     - Use `d` to **Drop** an item (only available in the Storage Room).
     - Use `items` to view descriptions of your held items.
-    - Use `quest` to check your current objectives.
 
 ---
 
@@ -58,6 +57,9 @@ This project implements an "Escape Room" style adventure where players navigate 
 The project includes a full suite of JUnit tests to ensure stability.
 - **`InteractTesting`**: Tests puzzle logic and narrative choices.
 - **`MoveNextTesting`**: Validates navigation and password-protected boundaries.
+- **`MovePrevTesting`**: Also validates navigation.
+- **`SearchTesting`**: Confirms item transfer from the room to the players inventory.
+- **`HelpTesting`**: Confirms loading and display of all the available commands.
 - **`DropTesting`**: Confirms item transfer logic between players and storage.
 - **`ItemInteractTesting`**: Ensures resource-based descriptions load correctly.
 
