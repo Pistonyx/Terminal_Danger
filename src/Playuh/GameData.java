@@ -24,9 +24,6 @@ public class GameData {
     /** List of all rooms (locations) defining the game map. */
     public ArrayList<Room> locations;
 
-    /** List of all quests available in the game data. */
-    public ArrayList<Quest> quests;
-
     /**
      * Loads game data from a JSON file located on the classpath.
      * Utilizes UTF-8 encoding to ensure special characters in dialogue or
