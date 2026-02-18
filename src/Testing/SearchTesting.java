@@ -79,4 +79,28 @@ public class SearchTesting {
         assertEquals(3, p.inventory.size(), "Inventory should not exceed 3 items");
         assertFalse(p.inventory.contains("Magnifying Glass"), "New item should not be added when full");
     }
+    @Test
+    void testExecute_PrioritizeRoomItemOverStorage() {
+        Player p = new Player("test");
+        p.currentRoomIndex = 0;
+        p.inventory = new ArrayList<>();
+
+        Room storage = new Room();
+        storage.hasItem = true; // Room has a hidden item
+        storage.storedItems = new ArrayList<>(Arrays.asList("Old Boot"));
+
+        ArrayList<Room> rooms = new ArrayList<>();
+        rooms.add(storage);
+
+        // Simulate input: 'n' to the room item, then '1' to the storage item
+        String simulatedInput = "n\n1\n";
+        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
+        SearchCommand cmd = new SearchCommand();
+        cmd.execute(p, rooms, new ArrayList<>());
+
+        // Assertion: Player should have the "Old Boot" from storage
+        // because they declined the room item first.
+        assertTrue(p.inventory.contains("Old Boot"));
+    }
 }
